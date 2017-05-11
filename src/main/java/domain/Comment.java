@@ -2,8 +2,25 @@ package domain;
 
 public class Comment {
     private int id;
+    private int mark;
     private String content;
     private String author;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getMark() {
+        return mark;
+    }
+
+    public void setMark(int mark) {
+        this.mark = mark;
+    }
     
     public String getContent() {
         return content;
