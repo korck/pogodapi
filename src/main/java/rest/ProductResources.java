@@ -5,6 +5,9 @@ import javax.ws.rs.Path;
 import domain.services.ShopService;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -17,8 +20,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/product")
+@Stateless
 public class ProductResources {
     private ShopService db = new ShopService();
+    
+    @PersistenceContext
+    EntityManager em;
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -29,7 +36,8 @@ public class ProductResources {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addProduct(Product product) {
-        db.addProduct(product);
+        em.persist(product);
+        //db.addProduct(product);
         return Response.ok(product.getId()).build();
     }
     

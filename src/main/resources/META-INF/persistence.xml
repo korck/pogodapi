@@ -6,7 +6,7 @@
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
 
     <persistence-unit name="demoPU">
-        <provider>org.eclipse.persistance.jpa.PersistenceProvider</provider>
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         
         <jta-data-source>jdbc/demoapps</jta-data-source>
         
