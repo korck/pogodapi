@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -30,7 +31,7 @@ public class ProductResources {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Product> getAllProducts() {
-        return db.getAllProducts();
+        return em.createNamedQuery("product.all", Product.class).getResultList();
     }
     
     @POST
@@ -44,7 +45,14 @@ public class ProductResources {
     @GET
     @Path("/{id}")
     public Response get(@PathParam("id") int id) {
-        Product result = db.getProduct(id);
+        Product result;
+        try {
+            result = em.createNamedQuery("product.id", Product.class)
+                    .setParameter("productId", id)
+                    .getSingleResult();
+        } catch(NoResultException n) {
+            return Response.status(404).build();
+        }
         if(result==null) {
             return Response.status(404).build();
         }
