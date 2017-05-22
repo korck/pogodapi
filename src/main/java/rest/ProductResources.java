@@ -2,7 +2,6 @@ package rest;
 
 import domain.Product;
 import javax.ws.rs.Path;
-import domain.services.ShopService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -22,9 +21,7 @@ import javax.ws.rs.core.Response;
 
 @Path("/product")
 @Stateless
-public class ProductResources {
-    private ShopService db = new ShopService();
-    
+public class ProductResources {    
     @PersistenceContext
     EntityManager em;
     
@@ -38,7 +35,6 @@ public class ProductResources {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addProduct(Product product) {
         em.persist(product);
-        //db.addProduct(product);
         return Response.ok(product.getId()).build();
     }
     
@@ -53,40 +49,49 @@ public class ProductResources {
         } catch(NoResultException n) {
             return Response.status(404).build();
         }
-        if(result==null) {
-            return Response.status(404).build();
-        }
         return Response.ok(result).build();
     }
     
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") int id, Product product) {
-        Product result = db.getProduct(id);
-        if(result==null) {
+    public Response update(@PathParam("id") int id, Product p) {
+        Product result;
+        try {
+            result = em.createNamedQuery("product.id", Product.class)
+                    .setParameter("productId", id)
+                    .getSingleResult();
+        } catch(NoResultException n) {
             return Response.status(404).build();
         }
+        result.setCategory(p.getCategory());
+        result.setName(p.getName());
+        result.setPrice(p.getPrice());
         return Response.ok(result).build();
     }
     
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") int id) {
-        Product result = db.getProduct(id);
-        if(result==null) 
+        Product result;
+        try {
+            result = em.createNamedQuery("product.id", Product.class)
+                    .setParameter("productId", id)
+                    .getSingleResult();
+        } catch(NoResultException n) {
             return Response.status(404).build();
-    db.deleteProduct(result);
-    return Response.ok().build();
+        }
+        em.remove(result);
+        return Response.ok().build();
     }
     
     @GET
     @Path("/category/{categoryId}")
-    public Response getCategory(@PathParam("categoryId") int id) {
-        if(db.getCategory(id)==null) {
-            return Response.status(404).build();
-        }
-        return Response.ok(db.getCategory(id)).build();
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<Product> getCategory(@PathParam("categoryId") int id, Product p) {
+        return em.createNamedQuery("product.category", Product.class)
+                .setParameter("categoryId", id)
+                .getResultList();
     }
 }
     

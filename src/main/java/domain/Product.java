@@ -1,6 +1,7 @@
 package domain;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,7 +14,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @NamedQueries({
     @NamedQuery(name="product.all", query="SELECT p FROM Product p"),
-    @NamedQuery(name="product.id", query="FROM Product p WHERE p.id=:productId")
+    @NamedQuery(name="product.id", query="FROM Product p WHERE p.id=:productId"),
+    @NamedQuery(name="product.category", query="FROM Product p WHERE p.category=:categoryId")
 })
 public class Product implements Serializable {
     @Id
